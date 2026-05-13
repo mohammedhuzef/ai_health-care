@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI | AI Medical Assistant</title>
+    <meta name="description" content="Get AI-powered preliminary health guidance and symptom analysis in a clean, trustworthy interface.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Screen Modal -->
+    <section id="authSection" class="auth-wrapper hidden">
+        <div class="auth-card glass animate-in" style="position: relative;">
+            <button id="auth-close-btn" class="auth-close-btn" aria-label="Close">&times;</button>
+            <div class="auth-header">
+                <h2>Welcome</h2>
+                <p>Sign in to your AI Medical Assistant</p>
+            </div>
+            
+            <div class="tabs auth-tabs" role="tablist">
+                <button class="tab-btn active" data-auth-tab="login" role="tab" aria-selected="true" id="tab-login">Login</button>
+                <button class="tab-btn" data-auth-tab="signup" role="tab" aria-selected="false" id="tab-signup">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active" novalidate>
+                <div class="form-group">
+                    <label>Email or Phone</label>
+                    <input type="text" id="login-id" placeholder="Enter email or 10-digit phone" required>
+                    <span class="error-msg" id="login-id-error"></span>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-pass" placeholder="Enter password" required>
+                        <button type="button" class="toggle-pass" tabindex="-1">👁️</button>
+                    </div>
+                </div>
+                <div class="form-options">
+                    <label class="remember-me"><input type="checkbox" id="login-remember"> Remember me</label>
+                </div>
+                <div class="auth-error-banner hidden" id="login-main-error"></div>
+                <button type="submit" class="primary-btn" id="login-submit-btn">
+                    <span>Login</span>
+                    <div class="loader" style="display:none;" id="login-loader"></div>
+                </button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="auth-form hidden" novalidate>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signup-name" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email or Phone</label>
+                    <input type="text" id="signup-id" placeholder="Enter email or 10-digit phone" required>
+                    <span class="error-msg" id="signup-id-error"></span>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signup-pass" placeholder="Min 6 characters" required>
+                        <button type="button" class="toggle-pass" tabindex="-1">👁️</button>
+                    </div>
+                    <span class="error-msg" id="signup-pass-error"></span>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="signup-confirm" placeholder="Repeat password" required>
+                        <button type="button" class="toggle-pass" tabindex="-1">👁️</button>
+                    </div>
+                    <span class="error-msg" id="signup-confirm-error"></span>
+                </div>
+                <div class="auth-error-banner hidden" id="signup-main-error"></div>
+                <button type="submit" class="primary-btn" id="signup-submit-btn">
+                    <span>Create Account</span>
+                    <div class="loader" style="display:none;" id="signup-loader"></div>
+                </button>
+            </form>
+            <p class="auth-disclaimer">⚠️ This login system is for demo purposes only.</p>
+        </div>
+    </section>
+
+    <!-- Main App Section -->
+    <div id="appSection" class="app-container">
+        <div class="mobile-overlay" id="mobile-overlay"></div>
+        <!-- Sidebar / History -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                    <span>AI</span>
+                    <button class="mobile-close-btn" id="mobile-close-btn" aria-label="Close Sidebar">&times;</button>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- History items will be injected here -->
+                <div class="empty-history">No past sessions</div>
+            </div>
+            <button class="new-chat-btn" id="new-chat-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                New Analysis
+            </button>
+            <button class="logout-btn" id="logout-btn">
+                🚪 Logout
+            </button>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="mobile-header-bar">
+                    <button class="hamburger-btn" id="hamburger-btn" aria-label="Open menu">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+                    </button>
+                    <button class="profile-auth-btn" id="profile-auth-btn" aria-label="Login">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </button>
+                    <h1 id="welcome-header">AI Medical Assistant</h1>
+                </div>
+                <p>Gentle, wise guidance for your health and wellbeing.</p>
+            </header>
+
+            <div class="content-wrapper">
+                <section class="input-section" id="input-section">
+                    <div class="card glass">
+                        <div class="tabs" role="tablist">
+                            <button class="tab-btn active" data-tab="symptoms" role="tab" aria-selected="true" aria-controls="symptoms-tab">Symptom Search</button>
+                            <button class="tab-btn" data-tab="reports" role="tab" aria-selected="false" aria-controls="reports-tab">Analyze Report</button>
+                        </div>
+
+                        <div id="symptoms-tab" class="tab-content active" role="tabpanel">
+                            <h2>How can we help today?</h2>
+                            <div class="textarea-wrapper">
+                                <textarea id="symptom-input" placeholder="Describe your symptoms in detail..."></textarea>
+                                <div class="ai-status">AI-powered readiness...</div>
+                            </div>
+                            <button class="primary-btn" id="analyze-btn" disabled>
+                                <span>Analyze Symptoms</span>
+                                <div class="loader" id="btn-loader"></div>
+                            </button>
+                        </div>
+
+                        <div id="reports-tab" class="tab-content" role="tabpanel">
+                            <h2>Analyze Medical Report</h2>
+                            <p class="tab-info">Upload a photo of your lab results, blood test, or radiology report for AI analysis.</p>
+                            <div class="upload-area" id="upload-area">
+                                <input type="file" id="report-upload" accept="image/*" hidden>
+                                <div class="upload-placeholder" id="upload-placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    <p>Click to select report photo</p>
+                                    <span>Supports JPG, PNG (Max 5MB)</span>
+                                </div>
+                                <div class="preview-container hidden" id="preview-container">
+                                    <img id="report-preview" src="" alt="Report Preview">
+                                    <button class="remove-btn" id="remove-report">✕</button>
+                                </div>
+                            </div>
+                            <button class="primary-btn" id="analyze-report-btn" disabled>
+                                <span>Analyze Report</span>
+                                <div class="loader" id="report-loader"></div>
+                            </button>
+                        </div>
+                        <p class="disclaimer">Not a substitute for professional medical advice.</p>
+                    </div>
+                </section>
+
+                <section class="results-section hidden" id="results-section">
+                    <div class="result-card glass animate-in">
+                        <div class="result-header">
+                            <div class="status-badge" id="risk-level">Analysis Complete</div>
+                            <button class="back-link" id="back-btn">&larr; Back to input</button>
+                        </div>
+                        <h2 id="result-title">Symptom Summary</h2>
+                        <div class="result-body" id="result-body">
+                            <!-- AI Result Content -->
+                        </div>
+                        <div class="diagnostic-grid">
+                            <div class="diagnostic-section" id="symptom-breakdown">
+                                <h3>Symptom Breakdown</h3>
+                                <div class="symptom-details" id="symptom-details-list">
+                                    <!-- Dynamic symptom details -->
+                                </div>
+                            </div>
+                            <div class="diagnostic-section" id="condition-dive">
+                                <h3>Condition Deep-Dive</h3>
+                                <div class="pathophysiology" id="pathophysiology-content">
+                                    <!-- Mechanism of the condition -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="possible-causes">
+                            <h3>Likely Underlying Causes</h3>
+                            <div id="causes-tags" class="tags-container">
+                                <!-- Tags will be injected here -->
+                             </div>
+                        </div>
+                        <div class="categorized-tips" id="categorized-tips">
+                            <!-- Categorized solution sections will be injected here -->
+                        </div>
+                        <div class="warning-box">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                            <p><strong>Disclaimer:</strong> This tool provides preliminary information and is not a medical diagnosis. If you are experiencing an emergency, contact your local emergency services immediately.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
